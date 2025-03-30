@@ -4,7 +4,8 @@ import { type BreadcrumbItem } from '@/types';
 import { Cat } from '@/types/models';
 import { Head } from '@inertiajs/vue3';
 import { PropType } from 'vue';
-import { useVueTable, getCoreRowModel, FlexRender, ColumnDef } from '@tanstack/vue-table';
+import { useVueTable, getCoreRowModel, FlexRender, ColumnDef, createColumnHelper } from '@tanstack/vue-table';
+import BreedsColumn from './components/BreedsColumn.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,7 +21,8 @@ const { cats } = defineProps({
     },
 });
 
-const columns: ColumnDef<Cat>[] = [
+const columnHelper = createColumnHelper<Cat>();
+const columns = [
     {
         header: 'ID',
         accessorKey: 'id',
@@ -29,13 +31,10 @@ const columns: ColumnDef<Cat>[] = [
         header: 'Name',
         accessorKey: 'name',
     },
-    {
-        header: 'Breeds',
-        accessorFn: (row: Cat) => {
-            // Call that shit good, because I'm tired of trying to make badges work in Vue
-            return row.breeds.map(breed => `${breed.name} (${breed.pivot.percentage}%)`).join(' | ');
-        },
-    }
+    columnHelper.accessor('breeds', {
+        header: () => 'Breeds',
+        cell: BreedsColumn,
+    }),
 ];
 
 
